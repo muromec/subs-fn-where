@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Ongoing list</h1>
+
+<hr/>
+{% for title in titles %}
+<a href="/t/{{title.name|escape}}">{{title.name|escape}}</a>
+: [{{" | ".join(title.subbers)}}]
+<br/>
+{% endfor %}
+<a href="next{{titles[-1].key()}}">next</a>
+<hr/>
+{% endblock %}

@@ -1,0 +1,22 @@
+application: subs-fn-where
+version: preview
+runtime: python
+api_version: 1
+
+default_expiration: 1d
+
+handlers:
+
+- url: /static
+  static_dir: static
+
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+
+- url: /adm/.*
+  script: main.py
+  login: admin
+
+- url: /.*
+  script: main.py

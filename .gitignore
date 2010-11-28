@@ -1,0 +1,9 @@
+*.pyc
+*.swp
+.installed.cfg
+src/distlib/
+etc/
+bin
+*#
+.#*
+src/config.py

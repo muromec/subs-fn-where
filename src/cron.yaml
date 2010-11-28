@@ -1,0 +1,6 @@
+cron:
+- description: import rss
+  url: /import
+  schedule: every 32 minutes
+
+

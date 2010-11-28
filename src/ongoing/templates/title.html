@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{title.name}}</h1>
+
+<hr/>
+{% for ep in eps %}
+[{{ep.subber}}] | {{ep.title}} | {{ep.number}}<br/>
+{% endfor %}
+<hr/>
+
+{% endblock %}
