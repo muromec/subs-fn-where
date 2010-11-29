@@ -70,7 +70,7 @@ def title_parse(title):
     ep = re.search("[_-]([0-9]{2,3})", title)
 
   if not ep:
-    ep = re.search("(EP|E|SP|OVA)([0-9]{1,3})", title)
+    ep = re.search("(EP|Ep\.|E|SP|OVA)([0-9]{1,3})", title)
 
   if ep:
     ep_n = ep.groups()[-1]
