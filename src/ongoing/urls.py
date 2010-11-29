@@ -11,7 +11,7 @@ def get_rules():
         handler="ongoing.handlers.Index",
       ),
       Rule(
-        "/import",
+        "/adm/import",
         handler="ongoing.handlers.Import",
       ),
       Rule(

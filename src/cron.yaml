@@ -1,6 +1,6 @@
 cron:
 - description: import rss
-  url: /import
+  url: /adm/import
   schedule: every 32 minutes
 
 
