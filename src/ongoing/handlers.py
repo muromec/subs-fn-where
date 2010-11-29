@@ -1,7 +1,6 @@
 import logging
 from google.appengine.ext import db
 from google.appengine.ext import deferred
-from google.appengine.api import users
 
 from tipfy import RequestHandler, Response, Forbidden, NotFound
 from tipfy.ext.jinja2 import render_response
@@ -14,7 +13,7 @@ class Index(RequestHandler):
   def get(self, start_from=None):
     titles = models.Title.all()
     if start_from:
-      titles.filter("__key__", db.Key(start_from))
+      titles.filter("__key__ >", db.Key(start_from))
 
     return render_response(
         "welcome.html",
@@ -41,10 +40,6 @@ class Title(RequestHandler):
 
 class Import(RequestHandler):
   def get(self):
-
-    if not users.is_current_user_admin():
-      raise Forbidden
-
 
     releases = {}
     to_save = []
