@@ -15,6 +15,10 @@ def get_rules():
         handler="ongoing.handlers.Import",
       ),
       Rule(
+        "/adm/import/calendar",
+        handler="ongoing.animecalendar.Import",
+      ),
+      Rule(
         "/t/<path:title>",
         endpoint="title",
         handler="ongoing.handlers.Title",

@@ -3,4 +3,7 @@ cron:
   url: /adm/import
   schedule: every 32 minutes
 
+- description: import calendar
+  url: /adm/import/calendar
+  schedule: every monday 02:35
 

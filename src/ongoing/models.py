@@ -3,6 +3,7 @@ from google.appengine.ext import db
 class Title(db.Model):
   name = db.StringProperty()
   subbers = db.StringListProperty(default=[])
+  show = db.BooleanProperty(default=False)
 
   def __init__(self, *a, **kw):
     super(Title, self).__init__(
