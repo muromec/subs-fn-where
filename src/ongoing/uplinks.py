@@ -92,6 +92,8 @@ def title_parse(title):
   title = re.sub("\([^\)]*\)", "", title)
 
 
+  if not title:
+    return None
 
   while title[0] in ["_", "-"]:
     title = title[1:]
@@ -126,6 +128,9 @@ class TokyoTosho(object):
   @classmethod
   def parse(cls, entry):
     ret = title_parse(entry.title)
+
+    if not ret:
+      return
 
     ret['link'] = entry.link
 
