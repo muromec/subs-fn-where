@@ -32,6 +32,9 @@ def title_parse(title):
   title = re.sub("\]_*\[", "][", title)
   title = re.sub("\.[a-zA-Z0-9]{3}$", "", title)
 
+  if len(re.findall("_", title)) < len(re.findall("\.", title)):
+    title = title.replace(".", "_") # arr
+
   # remove crc
   title = re.sub("\[[a-fA-F0-9]{8}\]", "", title)
 
