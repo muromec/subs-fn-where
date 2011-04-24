@@ -13,7 +13,8 @@ class Index(RequestHandler):
   def get(self, start_from=None):
     titles = models.Title.all()
     if start_from:
-      titles.filter("__key__ >", db.Key(start_from))
+      key = db.Key.from_path("Title", start_from)
+      titles.filter("__key__ >", key)
 
     return render_response(
         "welcome.html",

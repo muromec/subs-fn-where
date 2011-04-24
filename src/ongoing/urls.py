@@ -7,7 +7,7 @@ def get_rules():
         handler="ongoing.handlers.Index",
       ),
       Rule(
-        "/next<string:start_from>",
+        "/next/<string:start_from>",
         handler="ongoing.handlers.Index",
       ),
       Rule(
@@ -16,6 +16,7 @@ def get_rules():
       ),
       Rule(
         "/t/<path:title>",
+        endpoint="title",
         handler="ongoing.handlers.Title",
       ),
   ]
