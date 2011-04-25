@@ -23,6 +23,11 @@ def get_rules():
         handler="ongoing.anidb.Import",
       ),
       Rule(
+        "/adm/fix",
+        handler="ongoing.fixer.Fix",
+      ),
+
+      Rule(
         "/t/<path:title>",
         endpoint="title",
         handler="ongoing.handlers.Title",
