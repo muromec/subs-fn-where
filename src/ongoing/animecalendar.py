@@ -15,15 +15,13 @@ class Import(RequestHandler):
     remote = urllib.urlopen('http://www.animecalendar.net/shows/list/all')
 
     titles = re.findall(title_re, remote.read())
-    titles = [ (not d,t.decode('utf8')) for d,t in titles]
+    titles = [ (bool(d),t.decode('utf8')) for d,t in titles]
     deferred.defer(titles_update, titles)
 
     return Response("nom-nom-nom")
 
 def titles_update(titles):
   mode,t = titles.pop()
-  import logging
-  logging.info("mode: %r, title %r" % (mode, t))
 
   title_db = Title.get_by_key_name(t)
 
