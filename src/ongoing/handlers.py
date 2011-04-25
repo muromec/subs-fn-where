@@ -2,7 +2,7 @@ import logging
 from google.appengine.ext import db
 from google.appengine.ext import deferred
 
-from tipfy import RequestHandler, Response, Forbidden, NotFound
+from tipfy import RequestHandler, Response, Forbidden, NotFound, redirect_to
 from tipfy.ext.jinja2 import render_response
 import uplinks
 import models
@@ -25,6 +25,12 @@ class Index(RequestHandler):
 
 class Title(RequestHandler):
   def get(self, title):
+
+    r = models.Rename.get_by_key_name(title)
+
+    if r:
+      return redirect_to("title",title=r.name)
+
     title_db = renamed(title)
 
     if not title_db:
