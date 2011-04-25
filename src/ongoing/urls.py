@@ -19,6 +19,10 @@ def get_rules():
         handler="ongoing.animecalendar.Import",
       ),
       Rule(
+        "/adm/import/anidb",
+        handler="ongoing.anidb.Import",
+      ),
+      Rule(
         "/t/<path:title>",
         endpoint="title",
         handler="ongoing.handlers.Title",

@@ -37,3 +37,4 @@ class Ep(db.Model):
 
 class Rename(db.Model):
   name = db.StringProperty()
+  typs = db.StringListProperty()
