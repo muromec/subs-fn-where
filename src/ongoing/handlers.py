@@ -28,7 +28,7 @@ class Title(RequestHandler):
 
     r = models.Rename.get_by_key_name(title)
 
-    if r:
+    if r and r.name != title:
       return redirect_to("title",title=r.name)
 
     title_db = renamed(title)
