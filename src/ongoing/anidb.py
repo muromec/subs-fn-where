@@ -14,20 +14,41 @@ TITLES = 'http://anidb.net/api/animetitles.xml.gz'
 
 class Import(RequestHandler):
   def get(self):
-    remote = urllib.urlopen(TITLES)
 
-    dom = minidom.parse(remote)
-
-    ac = []
-    for name in parse(dom):
-      if type(name) == int and ac:
-        aid = ac.pop(0)
-        deferred.defer(renamed, aid, ac)
-        ac = []
-
-      ac.append(name)
+    deferred.defer(load)
 
     return Response("nya")
+
+def load():
+  remote = urllib.urlopen(TITLES)
+
+  head = remote.readline()
+  head += remote.readline()
+
+  logging.info("fetched head")
+
+  while True:
+    data = head
+
+    while '</anime>' not in data:
+      c = remote.readline()
+      if not c:
+        return
+
+      data += c
+
+    data += "</animetitles>"
+
+    try:
+      dom = minidom.parseString(data)
+    except:
+      logging.error("fuckup : %r" % data)
+
+    ac = list(parse(dom))
+
+    aid = ac.pop(0)
+    deferred.defer(renamed, aid, ac)
+
 
 def parse(xml):
   [titles] = xml.getElementsByTagName("animetitles")
@@ -48,20 +69,19 @@ def parse(xml):
 
       yield [typ,lang],data.nodeValue
 
-  yield 0
-
 def renamed(aid, names):
   put = []
-  key_name = None
+  main = None
   for (typ,lang), name in names:
     if 'main' == typ:
-      key_name = name
+      main = name
 
-  if not key_name:
+  if not main:
     return
 
+  put.append(Rename(key_name = "anidb%d" % aid, name=main, typs=["anidb"]))
   for typs, name in names:
-    put.append(Rename(key_name=key_name, typs=typs,name=name) )
+    put.append(Rename(key_name=name, typs=typs,name=main) )
 
   db.put(put)
 
