@@ -75,6 +75,9 @@ def renamed(title_name):
   return models.Title.get_by_key_name(title_name)
 
 def releasers_update(releases):
+  if not releases:
+    return
+
   title_name, groups = releases.pop()
 
   title_db =  renamed(title_name)
@@ -91,6 +94,5 @@ def releasers_update(releases):
   if save:
     title_db.put()
 
-  if releases:
-    deferred.defer(releasers_update, releases)
+  deferred.defer(releasers_update, releases)
 
