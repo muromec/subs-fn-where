@@ -2,7 +2,7 @@
 
 import urllib
 import logging
-from xml.dom import minidom
+from xml import sax
 
 from google.appengine.ext import deferred
 from google.appengine.ext import db
@@ -22,57 +22,57 @@ class Import(RequestHandler):
 def load():
   remote = urllib.urlopen(TITLES)
 
-  head = remote.readline()
-  head += remote.readline()
+  handler = AnidbHandler()
 
-  logging.info("fetched head")
+  try:
+    sax.parse(remote, handler)
+  except ValueError:
+    pass
 
-  while True:
-    data = head
+class AnidbHandler(sax.ContentHandler):
+  aid = None
+  titles = []
+  def startElement(self, name, attrs):
+    self.current = name
+    f = getattr(self, 'start_%s' % name, None)
+    if f:
+      f(attrs)
 
-    while '</anime>' not in data:
-      c = remote.readline()
-      if not c:
-        return
+  def endElement(self, name):
+    self.current = None
+    f = getattr(self, 'end_%s' % name, None)
+    if f:
+      f()
 
-      data += c
+  def characters(self, content):
+    if not self.current:
+      return
 
-    data += "</animetitles>"
+    f = getattr(self, 'content_%s' % self.current, None)
+    if f:
+      f(content)
 
-    try:
-      dom = minidom.parseString(data)
-    except:
-      logging.error("fuckup : %r" % data)
+  def content_title(self, content):
+    self.titles[-1][-1] += content
 
-    ac = list(parse(dom))
+  def start_anime(self, attrs):
+    self.aid = int(attrs.getValue("aid"))
 
-    aid = ac.pop(0)
-    deferred.defer(renamed, aid, ac)
+  def end_anime(self):
+    #logging.info("commit %d %r" % (self.aid, self.titles))
+    deferred.defer(renamed, self.aid, self.titles)
+    self.titles = []
 
+  def start_title(self, attrs):
+    typ = attrs.getValue("type")
+    lang = attrs.getValue("xml:lang")
 
-def parse(xml):
-  [titles] = xml.getElementsByTagName("animetitles")
-  for anime in titles.childNodes:
-    if anime.nodeName != 'anime':
-      continue
-
-    anidb_id = int(anime.getAttributeNode("aid").value)
-    yield anidb_id
-
-    for name in anime.childNodes:
-      if name.nodeName != 'title':
-        continue
-
-      typ = name.getAttributeNode("type").value
-      lang = name.getAttributeNode("xml:lang").value
-      [data] = name.childNodes
-
-      yield [typ,lang],data.nodeValue
+    self.titles.append( [typ,lang,u""] )
 
 def renamed(aid, names):
   put = []
   main = None
-  for (typ,lang), name in names:
+  for typ,lang,name in names:
     if 'main' == typ:
       main = name
 
@@ -80,8 +80,12 @@ def renamed(aid, names):
     return
 
   put.append(Rename(key_name = "anidb%d" % aid, name=main, typs=["anidb"]))
-  for typs, name in names:
-    put.append(Rename(key_name=name, typs=typs,name=main) )
+  for typ,lang,name in names:
+    put.append(Rename(
+      key_name=name,
+      typs=[typ,lang],
+      name=main)
+    )
 
   db.put(put)
 
