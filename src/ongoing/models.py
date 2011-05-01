@@ -1,4 +1,5 @@
 from google.appengine.ext import db
+from tipfy.ext.db import JsonProperty
 
 class Title(db.Model):
   name = db.StringProperty()
@@ -16,9 +17,11 @@ class Title(db.Model):
 class Ep(db.Model):
 
   def __init__(self, *a, **kw):
+    uniq = kw.get('link') or "%s/%s" % (kw['subber'], kw['number'] )
+
     key = db.Key.from_path(
         Title.kind(), kw['title'],
-        self.kind(), "%s/%s" % (kw['subber'], kw['number'])
+        self.kind(), uniq
     )
 
     if 'key' not in kw:
@@ -38,3 +41,19 @@ class Ep(db.Model):
 class Rename(db.Model):
   name = db.StringProperty()
   typs = db.StringListProperty()
+
+class Drop(db.Model):
+  owner = db.StringProperty()
+  data = db.ListProperty(db.Key, default=[])
+
+  @classmethod
+  def load(cls, email):
+    ent = cls.get_by_key_name(email)
+
+    if not ent:
+      ent = cls(owner=email, key_name=email)
+
+    return ent
+
+class Token(db.Model):
+  owner = db.StringProperty()

@@ -38,6 +38,27 @@ def get_rules():
         handler="ongoing.sub.Add",
       ),
       Rule(
+        "/u/drop",
+        handler="ongoing.handlers.ShowDrop",
+      ),
+      Rule(
+        "/r/drop/<token>",
+        handler="ongoing.handlers.ShowDrop",
+      ),
+      Rule(
+        "/u/ydrop",
+        handler="ongoing.handlers.YShowDrop",
+      ),
+      Rule(
+        "/r/ydrop/<token>",
+        handler="ongoing.handlers.YShowDrop",
+      ),
+
+      Rule(
+        "/u/token",
+        handler="ongoing.handlers.GenToken",
+      ),
+      Rule(
         "/adm/sub/refresh",
         handler="ongoing.sub.Refresh",
       ),

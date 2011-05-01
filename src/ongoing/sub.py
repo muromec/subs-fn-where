@@ -1,4 +1,5 @@
 import time
+import logging
 
 import  google.appengine.api.prospective_search as matcher
 from google.appengine.api.users import get_current_user
@@ -7,7 +8,7 @@ from google.appengine.ext import db
 
 from tipfy import RequestHandler, Response, redirect_to
 
-from models import Ep
+from models import Ep, Drop
 
 class Refresh(RequestHandler):
   def get(self):
@@ -37,23 +38,20 @@ class Result(RequestHandler):
     ep = db.get(db.Key(key))
 
     for sub_id in self.request.form.getlist("id"):
-      dispatch(sub_id.split('/'), ep)
+      sub_ids = sub_id.split('/')
+      db.run_in_transaction(dispatch, sub_ids, ep)
 
     return Response("ok")
 
 
 def dispatch((email,title), ep):
-  mail.send_mail(sender="ilya.muromec@gmail.com", 
-      to=email,
-      subject = u'updated %s' % title,
-      body = """
-Title %(title)s updated. Ep %(ep)d [%(subber)s].
+  drop = Drop.load(email)
+  if ep.key() in drop.data:
+    logging.info("ingore %r" % ep.key())
+    return
 
-Download link below: %(link)s
-""" % dict(
-    title=ep.title, 
-    ep=ep.number, subber=ep.subber,
-    link = ep.link 
-  )
-  )
+  drop.data.append(ep.key())
+  drop.put()
+
+  logging.info("puted %r" % drop.data)
 

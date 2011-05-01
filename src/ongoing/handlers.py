@@ -1,6 +1,12 @@
 import logging
+from uuid import uuid4
+import simplejson
+import simpleyaml
+
 from google.appengine.ext import db
 from google.appengine.ext import deferred
+from google.appengine.api.users import get_current_user
+
 import  google.appengine.api.prospective_search as matcher
 
 from tipfy import RequestHandler, Response, Forbidden, NotFound, redirect_to
@@ -110,3 +116,52 @@ def releasers_update(releases):
 
   deferred.defer(releasers_update, releases)
 
+class ShowDrop(RequestHandler):
+  dumper = simplejson.dumps
+  CT = 'application/json'
+  def get(self, token=None):
+    if token:
+      token_db = models.Token.get_by_key_name(token)
+      if not token_db:
+        raise NotFound
+
+      email = token_db.owner
+    else:
+      user = get_current_user()
+      email = user.email()
+
+    drop = models.Drop.load(email)
+
+    eps = db.get(drop.data)
+
+    try:
+      dumps = self.dumper.__func__
+    except AttributeError:
+      dumps = self.dumper.im_func
+
+    out = dumps([
+      dict(
+        link=ep.link,
+        number=ep.number,
+        title=ep.title,
+      )
+      for ep in eps if ep
+      ])
+
+    return Response(out, content_type=self.CT)
+
+class YShowDrop(ShowDrop):
+  dumper = simpleyaml.dumps
+  CT = 'text/x-yaml'
+
+
+class GenToken(RequestHandler):
+  def get(self):
+    user = get_current_user()
+
+    token_str = str(uuid4())
+
+    token = models.Token(owner=user.email(), key_name = token_str)
+    token.put()
+
+    return Response("token: %s" % token_str)
