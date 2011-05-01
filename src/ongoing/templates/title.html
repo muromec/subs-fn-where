@@ -5,7 +5,7 @@
 
 <hr/>
 {% for ep in eps %}
-[{{ep.subber}}] | {{ep.title}} | {{ep.number}}<br/>
+[{{ep.subber}}] | <a href="{{ep.link}}" >{{ep.title}}</a> | {{ep.number}}<br/>
 {% endfor %}
 <hr/>
 
