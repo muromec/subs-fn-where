@@ -1,6 +1,7 @@
 import logging
 from google.appengine.ext import db
 from google.appengine.ext import deferred
+import  google.appengine.api.prospective_search as matcher
 
 from tipfy import RequestHandler, Response, Forbidden, NotFound, redirect_to
 from tipfy.ext.jinja2 import render_response
@@ -64,6 +65,13 @@ class Import(RequestHandler):
       to_save.append(ep)
 
     db.put(to_save)
+
+    for ep in to_save:
+      matcher.match(
+          ep,
+          result_key=str(ep.key()),
+          result_return_document=False
+      )
   
     deferred.defer(releasers_update, releases.items())
 

@@ -32,4 +32,17 @@ def get_rules():
         endpoint="title",
         handler="ongoing.handlers.Title",
       ),
+      Rule(
+        "/u/sub/add/<path:title>",
+        endpoint="sub:add",
+        handler="ongoing.sub.Add",
+      ),
+      Rule(
+        "/adm/sub/refresh",
+        handler="ongoing.sub.Refresh",
+      ),
+      Rule(
+        "/_ah/prospective_search",
+        handler="ongoing.sub.Result",
+      ),
   ]

@@ -7,6 +7,7 @@
 {% for title in titles %}
 <a href="{{ url_for("title", title=title.name)}}">{{title.name|escape}}</a>
 : [{{" | ".join(title.subbers)}}]
+<a href="{{ url_for("sub:add", title=title.name) }}">add</a>
 <br/>
 {% if loop.last %}
 <a href="/next/{{title.name|escape}}">next</a>
