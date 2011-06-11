@@ -6,6 +6,7 @@ from google.appengine.ext import deferred
 def rebuild_starts(cursor=None):
 
     rebuildq = models.Title.all(keys_only=True)
+    rebuildq.with_cursor(cursor)
 
     title = rebuildq.get()
 
