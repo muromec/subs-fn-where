@@ -38,6 +38,11 @@ def get_rules():
         handler="ongoing.sub.Add",
       ),
       Rule(
+        "/u/sub/add/<path:title>/subber/<path:subber>",
+        endpoint="sub:add",
+        handler="ongoing.sub.Add",
+      ),
+      Rule(
         "/u/drop",
         handler="ongoing.handlers.ShowDrop",
       ),
@@ -66,4 +71,15 @@ def get_rules():
         "/_ah/prospective_search",
         handler="ongoing.sub.Result",
       ),
+
+      Rule(
+        "/api/title_hint",
+         handler="ongoing.api.TitleHint",
+      ),
+
+      Rule(
+        "/adm/regen_hint",
+        handler="ongoing.handlers.RebuildNames",
+      ),
+
   ]

@@ -1,5 +1,8 @@
 from google.appengine.ext import db
 from tipfy.ext.db import JsonProperty
+from aetycoon import TransformProperty
+
+from util import get_starts
 
 class Title(db.Model):
   name = db.StringProperty()
@@ -13,6 +16,17 @@ class Title(db.Model):
 
   def key(self):
     return db.Key.from_path(self.kind(), self.name)
+
+class TitleHint(db.Model):
+  name = db.StringProperty()
+
+  start = TransformProperty(name, get_starts)
+
+  def __init__(self, *a, **kw):
+    super(TitleHint, self).__init__(
+        key_name=kw.get("name"),
+        *a, **kw)
+
 
 class Ep(db.Model):
 

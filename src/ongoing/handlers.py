@@ -105,6 +105,9 @@ def releasers_update(releases):
   if not title_db:
     title_db = models.Title(name=title_name)
 
+    title_hint = models.TitleHint(name=title_name)
+    title_hint.put()
+
   save = False
   for group in groups:
     if group and group not in title_db.subbers:
@@ -144,6 +147,7 @@ class ShowDrop(RequestHandler):
         link=ep.link,
         number=ep.number,
         title=ep.title,
+        subber = ep.subber,
       )
       for ep in eps if ep
       ])
@@ -165,3 +169,9 @@ class GenToken(RequestHandler):
     token.put()
 
     return Response("token: %s" % token_str)
+
+class RebuildNames(RequestHandler):
+  def get(self):
+    from rebuild import rebuild_starts
+    rebuild_starts()
+    return Response("ya-ya")
